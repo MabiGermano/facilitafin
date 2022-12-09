@@ -8,13 +8,15 @@
 		<version>3.0.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>ifpe.edu.br</groupId>
+	<groupId>com.br</groupId>
 	<artifactId>facilitafin</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>facilitafin</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Financial assistant </description>
 	<properties>
 		<java.version>11</java.version>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -70,6 +72,11 @@
 			<version>0.11.2</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -78,15 +85,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>11</source>
-					<target>11</target>
-				</configuration>
-            </plugin>
-        </plugins>
+		</plugins>
 	</build>
 
 </project>
