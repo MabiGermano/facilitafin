@@ -1,0 +1,24 @@
+main {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div > .google-button {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #000;
+    box-shadow: none;
+
+}
+
+h1 {
+    font-size: 4.5rem;
+    color: #251CF1;
+}
+
+img {
+    width: 100%;
+}
