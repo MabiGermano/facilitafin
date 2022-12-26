@@ -5,6 +5,7 @@ import { Button, FormControl, TextField } from "@mui/material";
 import mainLoginImg from "../../assets/imgs/mainlogin.png";
 import Grid2 from "@mui/material/Unstable_Grid2"; // Grid version 2
 
+import { Link } from "react-router-dom";
 import "./style.css";
 
 export default function Login() {
@@ -52,9 +53,11 @@ export default function Login() {
             />
           </Grid2>
           <Grid2 item xs={8} marginBottom={2}>
+          <Link to="/home">
             <Button variant="contained" fullWidth>
               Entrar
             </Button>
+            </Link>
           </Grid2>
           <Grid2 item xs={8} marginBottom={2}>
             <GoogleLogin
@@ -67,6 +70,9 @@ export default function Login() {
               cookiePolicy={"single_host_origin"}
               isSignedIn={true}
             />
+          </Grid2>
+          <Grid2 item xs={8} marginBottom={2} textAlign="center">
+            <h5>Novo por aqui? <Link to="/user/new">Cadastre-se </Link> </h5>
           </Grid2>
         </Grid2>
       </FormControl>
