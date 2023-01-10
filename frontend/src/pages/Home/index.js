@@ -16,12 +16,17 @@ import { useState } from "react";
 import SelectMonth from "../../components/SelectMonth";
 import AttachMoney from "@mui/icons-material/AttachMoney";
 import MoneyOff from "@mui/icons-material/MoneyOff";
+import Chart from "react-apexcharts";
 
 import "./style.css";
 
 export default function Home() {
   const [category, setCategory] = useState("");
   const [goal, setGoal] = useState("");
+  const series = [44, 55, 41, 17, 15];
+  const labels = ['A', 'B', 'C', 'D', 'E'];
+  const options = {};
+  
   return (
     <>
       <header>
@@ -110,9 +115,9 @@ export default function Home() {
                 Adicionar
               </Button>
             </Box>
-          </Grid2> 
+          </Grid2>
           {/* TODO: refactor list component */}
-          <Grid2 md={3} marginX={2}>
+          <Grid2 md={4} marginX={2}>
             <Box sx={{ boxShadow: 3, padding: 2 }} textAlign="center">
               <h3>Registros do mês</h3>
               <SelectMonth />
@@ -120,25 +125,36 @@ export default function Home() {
                 {/* List button receita */}
                 <ListItemButton component="a" href="#simple-list">
                   <ListItemIcon>
-                    <AttachMoney color="success"/>
+                    <AttachMoney color="success" />
                   </ListItemIcon>
                   <ListItemText primary="R$ 567,52" />
                   <ListItemText primary="Feira do mês" />
                   <ListItemText primary="Essenciais" />
                 </ListItemButton>
 
-
                 {/* List button despesa */}
                 <ListItemButton component="a" href="#simple-list">
                   <ListItemIcon>
-                    <MoneyOff color="error"/>
+                    <MoneyOff color="error" />
                   </ListItemIcon>
                   <ListItemText primary="R$ 54,85" />
                   <ListItemText primary="Happy hour" />
                   <ListItemText primary="Essenciais" />
                 </ListItemButton>
-                
               </List>
+            </Box>
+          </Grid2>
+          <Grid2 md={3.5}>
+            <Box sx={{ boxShadow: 3, padding: 2 }} textAlign="center">
+              <h3>Análise despesa/mês</h3>
+              <div id="donut-chart">
+                <Chart
+                  options={options}
+                  series={series}
+                  type="donut"
+                  width="380"
+                />
+              </div>
             </Box>
           </Grid2>
         </Grid2>
