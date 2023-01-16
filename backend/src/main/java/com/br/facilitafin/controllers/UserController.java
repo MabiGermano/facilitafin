@@ -1,25 +1,22 @@
 package com.br.facilitafin.controllers;
 
-import com.br.facilitafin.exceptions.ResourceNotFoundException;
 import com.br.facilitafin.models.User;
-import com.br.facilitafin.repositories.UserRepository;
-import com.br.facilitafin.security.CurrentUser;
-import com.br.facilitafin.security.UserPrincipal;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.br.facilitafin.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
+@RequestMapping({"api/v1/user"})
 public class UserController {
 
-    private final UserRepository userRepository;
+    @Autowired
+    UserService userService;
 
-    @GetMapping("/profile")
-    @PreAuthorize("hasRole('USER')")
-    public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
-        return userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+    @PostMapping
+    public ResponseEntity<User> create(@RequestBody User user) {
+        User userResponse=userService.create(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
     }
 }

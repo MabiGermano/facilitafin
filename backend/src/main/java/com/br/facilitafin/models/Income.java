@@ -10,8 +10,8 @@ import java.util.UUID;
 @Entity
 public class Income {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     private Double amount;
     private IncomeCategory category;
     private String description;
