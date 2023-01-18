@@ -15,8 +15,14 @@ public class UserController {
     UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody User user) {
+    public ResponseEntity<String> create(@RequestBody User user) {
         User userResponse=userService.create(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user.getGlobalId().toString());
+    }
+
+    @GetMapping
+    public ResponseEntity<User> findOne(@RequestBody User user){
+        User userResponse=userService.findOne(user);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }
 }

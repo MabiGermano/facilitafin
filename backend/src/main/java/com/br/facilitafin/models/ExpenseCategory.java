@@ -10,6 +10,8 @@ public class ExpenseCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(unique = true)
+    private UUID globalId;
     private String description;
     @ManyToOne
     @JoinColumn(name = "user_id")

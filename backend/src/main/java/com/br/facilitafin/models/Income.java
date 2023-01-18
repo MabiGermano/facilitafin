@@ -12,6 +12,11 @@ public class Income {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(unique = true)
+    private UUID globalId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
     private Double amount;
     private IncomeCategory category;
     private String description;
