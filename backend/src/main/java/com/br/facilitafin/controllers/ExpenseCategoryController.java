@@ -18,9 +18,9 @@ public class ExpenseCategoryController {
     @Autowired
     ExpenseCategoryService expenseCategoryService;
 
-    @PostMapping
-    public ResponseEntity<String> create(@RequestBody ExpenseCategory expenseCategory) {
-        ExpenseCategory expenseCategoryResponse=expenseCategoryService.create(expenseCategory);
+    @PostMapping("user/{id}")
+    public ResponseEntity<String> create(@RequestBody ExpenseCategory expenseCategory, @PathVariable UUID id) {
+        ExpenseCategory expenseCategoryResponse=expenseCategoryService.create(expenseCategory, id);
         return ResponseEntity.status(HttpStatus.CREATED).body("Expense category created successfully");
     }
 

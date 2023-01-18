@@ -18,9 +18,9 @@ public class IncomeController {
     @Autowired
     IncomeService incomeService;
 
-    @PostMapping
-    public ResponseEntity<String> create(@RequestBody Income income) {
-        Income incomeResponse=incomeService.create(income);
+    @PostMapping("/user/{id}")
+    public ResponseEntity<String> create(@RequestBody Income income, @PathVariable UUID id) {
+        Income incomeResponse=incomeService.create(income, id);
         return ResponseEntity.status(HttpStatus.CREATED).body("Income created successfully");
     }
 

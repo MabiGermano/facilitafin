@@ -25,4 +25,11 @@ public class UserService {
             throw new NoExistentEntityException("User not found");
         return opUser.get();
     }
+
+    public User findByGlobalId(UUID globalId) {
+        Optional<User> user = userRepository.findByGlobalId(globalId);
+        if (user.isEmpty())
+            throw new NoExistentEntityException("No user found on database");
+        return user.get();
+    }
 }

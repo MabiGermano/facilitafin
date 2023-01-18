@@ -15,7 +15,7 @@ public class Income {
     @Column(unique = true)
     private UUID globalId;
     @ManyToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id")
     private User user;
     private Double amount;
     private IncomeCategory category;

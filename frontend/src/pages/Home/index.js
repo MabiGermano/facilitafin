@@ -25,7 +25,7 @@ export default function Home() {
   const [goal, setGoal] = useState("");
   const series = [44, 55, 41, 17, 15];
   const labels = ['A', 'B', 'C', 'D', 'E'];
-  const options = {};
+  const options = {series, labels};
   
   return (
     <>
@@ -151,6 +151,7 @@ export default function Home() {
                 <Chart
                   options={options}
                   series={series}
+                  labels={labels}
                   type="donut"
                   width="380"
                 />
