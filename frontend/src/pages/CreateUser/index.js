@@ -5,8 +5,33 @@ import IconButton from "@mui/material/IconButton";
 
 import { Link } from "react-router-dom";
 import "./style.css";
+import { useEffect, useState } from "react";
+import api from "../../services/api";
 
 export default function CreateUser() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  //TODO: refactor this code
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("senha: ", password);
+    console.log("confirm senha: ", confirmPassword);
+    if(password == confirmPassword) {
+      api.post("/api/v1/user",
+       { name, email, password }).then((_) => {
+        alert("Usuário criado com sucesso");
+        setEmail("");
+        setName("");
+        setConfirmPassword("");
+        setPassword("");
+       });
+    }else {
+      alert("Senhas não correspondem");
+    }
+  }
   return (
     <main id="new-user">
       <Link to="/">
@@ -24,6 +49,8 @@ export default function CreateUser() {
                 label="Nome"
                 variant="outlined"
                 fullWidth
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </Grid2>
             <Grid2 item xs={5} margin={2}>
@@ -33,6 +60,8 @@ export default function CreateUser() {
                 type="email"
                 variant="outlined"
                 fullWidth
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </Grid2>
 
@@ -43,6 +72,8 @@ export default function CreateUser() {
                 variant="outlined"
                 type="password"
                 fullWidth
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </Grid2>
             <Grid2 item xs={5} margin={2}>
@@ -50,12 +81,15 @@ export default function CreateUser() {
                 id="outlined-basic"
                 label="Confirmação de senha"
                 variant="outlined"
+                type="password"
                 fullWidth
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </Grid2>
 
             <Grid2 item xs={8} marginBottom={2}>
-              <Button variant="contained" fullWidth>
+              <Button variant="contained" fullWidth onClick={handleSubmit}>
                 Salvar
               </Button>
             </Grid2>

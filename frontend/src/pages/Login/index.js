@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GoogleLogin } from "react-google-login";
 import { gapi } from "gapi-script";
 import { Button, FormControl, TextField } from "@mui/material";
@@ -9,6 +9,9 @@ import { Link } from "react-router-dom";
 import "./style.css";
 
 export default function Login() {
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+
   useEffect(() => {
     const initClient = () => {
       gapi.client.init({
@@ -26,6 +29,11 @@ export default function Login() {
     console.log("failed:", err);
   };
   console.log(process.env.REACT_APP_CLIENT_ID);
+
+  const handleLogin = (event) => {
+    event.preventDefault();
+
+  }
   return (
     <main>
       <Grid2 container xs={5}>
@@ -40,6 +48,8 @@ export default function Login() {
               id="outlined-basic"
               label="Email"
               variant="outlined"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               fullWidth
             />
           </Grid2>
@@ -49,12 +59,14 @@ export default function Login() {
               label="Senha"
               variant="outlined"
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               fullWidth
             />
           </Grid2>
           <Grid2 item xs={8} marginBottom={2}>
           <Link to="/home">
-            <Button variant="contained" fullWidth>
+            <Button variant="contained" fullWidth >
               Entrar
             </Button>
             </Link>
