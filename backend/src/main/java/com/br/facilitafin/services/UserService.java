@@ -3,7 +3,9 @@ package com.br.facilitafin.services;
 import com.br.facilitafin.exception.NoExistentEntityException;
 import com.br.facilitafin.models.User;
 import com.br.facilitafin.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,8 +16,12 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    BCryptPasswordEncoder bc;
+
     public User create(User user) {
         user.setGlobalId(UUID.randomUUID());
+        user.setPassword(bc.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
