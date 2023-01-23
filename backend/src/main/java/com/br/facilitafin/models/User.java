@@ -30,6 +30,7 @@ public class User {
 //    @OneToMany
 //    @JoinColumn(name = "user_id")
 //    private List<ExpenseCategory> expenseCategories = new ArrayList<ExpenseCategory>();
+    private String username;
     private String name;
     @Column(unique = true)
     private String email;
