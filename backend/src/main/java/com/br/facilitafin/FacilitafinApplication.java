@@ -16,8 +16,4 @@ public class FacilitafinApplication {
 		SpringApplication.run(FacilitafinApplication.class, args);
 	}
 
-	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
 }

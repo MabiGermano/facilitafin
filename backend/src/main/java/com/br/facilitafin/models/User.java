@@ -21,15 +21,6 @@ public class User {
     private Long id;
     @Column(unique = true)
     private UUID globalId;
-//    @OneToMany
-//    @JoinColumn(name = "user_id")
-//    private List<Expense> expenses = new ArrayList<Expense>();
-//    @OneToMany
-//    @JoinColumn(name = "user_id" )
-//    private List<Income> incomes = new ArrayList<Income>();
-//    @OneToMany
-//    @JoinColumn(name = "user_id")
-//    private List<ExpenseCategory> expenseCategories = new ArrayList<ExpenseCategory>();
     private String username;
     private String name;
     @Column(unique = true)

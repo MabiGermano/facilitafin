@@ -23,13 +23,23 @@ public class UserService {
         user.setGlobalId(UUID.randomUUID());
         user.setPassword(bc.encode(user.getPassword()));
         return userRepository.save(user);
+
     }
 
-    public User findOne(User user) {
-        Optional<User> opUser = userRepository.findByEmail(user.getEmail());
+    public User findByUsername(String username) {
+        Optional<User> opUser = userRepository.findByUsername(username);
+        System.out.println(opUser.isEmpty());
         if(opUser.isEmpty())
             throw new NoExistentEntityException("User not found");
         return opUser.get();
+    }
+
+    public User findByCredentials(String username, String password) {
+        return userRepository.findByUsernameAndPassword(username, bc.encode(password))
+                .orElseThrow(() -> {
+                    System.out.println(bc.encode(password));
+                    return new NoExistentEntityException("User not found");
+                });
     }
 
     public User findByGlobalId(UUID globalId) {
