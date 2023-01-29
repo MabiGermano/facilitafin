@@ -5,17 +5,20 @@ import { Button, FormControl, TextField } from "@mui/material";
 import mainLoginImg from "../../assets/imgs/mainlogin.png";
 import Grid2 from "@mui/material/Unstable_Grid2"; // Grid version 2
 
-import { Link } from "react-router-dom";
+
+import api from "../../services/api";
+import { Link, useNavigate } from "react-router-dom";
 import "./style.css";
 
 export default function Login() {
-  const [email, setEmail] = useState();
+  const [username, setUsername] = useState();
   const [password, setPassword] = useState();
+  const [warningMessage, setWarningMessage] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const initClient = () => {
       gapi.client.init({
-        
         clientId: process.env.REACT_APP_CLIENT_ID,
         scope: "",
       });
@@ -33,8 +36,16 @@ export default function Login() {
 
   const handleLogin = (event) => {
     event.preventDefault();
-    
-
+    console.log(password);
+    api.post("/api/v1/user/login",
+    { username, password })
+    .then((data) => {
+      console.log(data);
+     navigate("/home");
+    })
+    .catch((erro) => {
+      console.log(erro);
+      setWarningMessage("Username ou senha não cadastrados!")});
   }
   return (
     <main>
@@ -45,13 +56,16 @@ export default function Login() {
         <h1>FacilitaFin</h1>
       <FormControl columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         <Grid2 container justifyContent="center">
+          <Grid2 item xs={8} marginBottom={1} textAlign="center">
+            <p className="warning">{warningMessage}</p>
+          </Grid2>
           <Grid2 item xs={8} marginBottom={2}>
             <TextField
               id="outlined-basic"
-              label="Email"
+              label="Username (Email)"
               variant="outlined"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               fullWidth
             />
           </Grid2>
@@ -67,11 +81,9 @@ export default function Login() {
             />
           </Grid2>
           <Grid2 item xs={8} marginBottom={2}>
-          <Link to="/home">
-            <Button variant="contained" fullWidth >
+            <Button variant="contained" fullWidth onClick={handleLogin}>
               Entrar
             </Button>
-            </Link>
           </Grid2>
           <Grid2 item xs={8} marginBottom={2}>
             <GoogleLogin

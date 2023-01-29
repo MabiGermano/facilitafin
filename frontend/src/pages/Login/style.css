@@ -13,7 +13,9 @@ div > .google-button {
     box-shadow: none;
 
 }
-
+p.warning{
+    color: #bc1cf1;
+}
 h1 {
     font-size: 4.5rem;
     color: #251CF1;

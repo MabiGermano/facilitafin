@@ -24,6 +24,7 @@ public class AuthenticationService {
 
 
     public String generateToken(User userLogin) {
+        System.out.println(userLogin.toString());
         User user = userService.findByUsername(userLogin.getUsername());
         if(bc.matches(userLogin.getPassword(), user.getPassword())) {
 

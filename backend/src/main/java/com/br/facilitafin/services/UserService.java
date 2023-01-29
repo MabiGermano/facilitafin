@@ -21,6 +21,7 @@ public class UserService {
 
     public User create(User user) {
         user.setGlobalId(UUID.randomUUID());
+        user.setUsername(user.getEmail());
         user.setPassword(bc.encode(user.getPassword()));
         return userRepository.save(user);
 
@@ -30,7 +31,7 @@ public class UserService {
         Optional<User> opUser = userRepository.findByUsername(username);
         System.out.println(opUser.isEmpty());
         if(opUser.isEmpty())
-            throw new NoExistentEntityException("User not found");
+            throw new NoExistentEntityException("User"+ username +"not found");
         return opUser.get();
     }
 
