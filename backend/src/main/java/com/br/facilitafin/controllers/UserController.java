@@ -41,7 +41,6 @@ public class UserController {
     public ResponseEntity<User> findOne(@RequestHeader(value = SecurityConstants.HEADER_STRING) String headerToken){
         log.warn(headerToken);
 
-        System.out.println("findOne");
         String username = authenticationService.retrieveUserNameFromToken(headerToken);
         System.out.println(username);
         User userResponse=userService.findByUsername(username);

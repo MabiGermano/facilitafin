@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
-    public List<Expense> findByUserGlobalId(UUID globalId);
+    public List<Expense> findByUserUsername(String username);
 }

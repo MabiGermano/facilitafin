@@ -1,7 +1,9 @@
 package com.br.facilitafin.controllers;
 
+import com.br.facilitafin.config.SecurityConstants;
 import com.br.facilitafin.models.Expense;
 import com.br.facilitafin.models.User;
+import com.br.facilitafin.services.AuthenticationService;
 import com.br.facilitafin.services.ExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,15 +21,20 @@ public class ExpenseController {
     @Autowired
     ExpenseService expenseService;
 
-    @PostMapping("user/{id}")
-    public ResponseEntity<String> create(@RequestBody Expense expense, @PathVariable UUID id) {
-        Expense expenseResponse=expenseService.create(expense, id);
+    @Autowired
+    AuthenticationService authenticationService;
+
+    @PostMapping
+    public ResponseEntity<String> create(@RequestBody Expense expense, @RequestHeader(value = SecurityConstants.HEADER_STRING) String headerToken) {
+        String username = authenticationService.retrieveUserNameFromToken(headerToken);
+        Expense expenseResponse=expenseService.create(expense, username);
         return ResponseEntity.status(HttpStatus.CREATED).body("Expense created successfully");
     }
 
-    @GetMapping("/user/{id}")
-    public ResponseEntity<List<Expense>> list(@PathVariable UUID id){
-        List<Expense> listExpense=expenseService.listByUser(id);
+    @GetMapping
+    public ResponseEntity<List<Expense>> list(@RequestHeader(value = SecurityConstants.HEADER_STRING) String headerToken){
+        String username = authenticationService.retrieveUserNameFromToken(headerToken);
+        List<Expense> listExpense=expenseService.listByUser(username);
         return ResponseEntity.status(HttpStatus.OK).body(listExpense);
     }
 }

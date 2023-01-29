@@ -21,17 +21,16 @@ public class ExpenseService {
     @Autowired
     UserRepository userRepository;
 
-    public Expense create(Expense expense, UUID id) {
+    public Expense create(Expense expense, String username) {
         expense.setGlobalId(UUID.randomUUID());
-        Optional<User> user = userRepository.findByGlobalId(id);
-        if (user.isEmpty())
-            throw new NoExistentEntityException("No user found on database");
-        expense.setUser(user.get());
+        User user = userRepository
+                    .findByUsername(username)
+                    .orElseThrow(() -> new NoExistentEntityException("No user found on database"));
+        expense.setUser(user);
         expense.setCreatedAt(new Date());
         return expenseRepository.save(expense);
     }
-
-    public List<Expense> listByUser (UUID userGlobalId) {
-        return expenseRepository.findByUserGlobalId(userGlobalId);
+    public List<Expense> listByUser (String username) {
+        return expenseRepository.findByUserUsername(username);
     }
 }

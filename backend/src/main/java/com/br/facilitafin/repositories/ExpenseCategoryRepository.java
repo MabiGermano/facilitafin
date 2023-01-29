@@ -11,5 +11,5 @@ import java.util.UUID;
 public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategory, Long> {
 
     @EntityGraph(value = "ExpenseCategory.user", type = EntityGraph.EntityGraphType.FETCH)
-    public List<ExpenseCategory> findByUserGlobalId(UUID globalId);
+    public List<ExpenseCategory> findByUserUsername(String username);
 }

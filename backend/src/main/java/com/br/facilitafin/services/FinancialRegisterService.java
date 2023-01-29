@@ -18,17 +18,16 @@ public class FinancialRegisterService {
     @Autowired
     IncomeService incomeService;
 
-    public FinancialRegister load(UUID userGlobalId) {
+    public FinancialRegister load(String username) {
         FinancialRegister financialRegister = new FinancialRegister();
-        List<Expense> expenses = expenseService.listByUser(userGlobalId);
-        List<Income> incomes = incomeService.listByUser(userGlobalId);
+        List<Expense> expenses = expenseService.listByUser(username);
+        List<Income> incomes = incomeService.listByUser(username);
         financialRegister.setExpenses(expenses);
         financialRegister.setIncomes(incomes);
         return financialRegister;
     }
-    public Map<String, Double> findExpenseAnalysis(UUID userGlobalId) {
-        ExpenseAnalysis expenseAnalysis = new ExpenseAnalysis();
-        List<Expense> expenses = expenseService.listByUser(userGlobalId);
+    public Map<String, Double> findExpenseAnalysis(String username) {
+        List<Expense> expenses = expenseService.listByUser(username);
         Map<String, Double> series = new HashMap<String, Double>();
         expenses.stream().forEach((expense) -> {
             String categoryName = !expense.getCategory().getDescription().isEmpty() ? expense.getCategory().getDescription() : "Others";

@@ -22,17 +22,15 @@ public class IncomeService {
     @Autowired
     UserRepository userRepository;
 
-    public Income create(Income income, UUID id) {
+    public Income create(Income income, String username) {
         income.setGlobalId(UUID.randomUUID());
-        Optional<User> user = userRepository.findByGlobalId(id);
-        if (user.isEmpty())
-            throw new NoExistentEntityException("No user found on database");
-        income.setUser(user.get());
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new NoExistentEntityException("No user found on database"));
+        income.setUser(user);
         income.setCreatedAt(new Date());
         return incomeRepository.save(income);
     }
 
-    public List<Income> listByUser (UUID userGlobalId) {
-        return incomeRepository.findByUserGlobalId(userGlobalId);
+    public List<Income> listByUser (String username) {
+        return incomeRepository.findByUserUsername(username);
     }
 }

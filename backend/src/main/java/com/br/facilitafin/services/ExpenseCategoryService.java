@@ -21,14 +21,14 @@ public class ExpenseCategoryService {
     @Autowired
     UserService userService;
 
-    public ExpenseCategory create(ExpenseCategory expenseCategory, UUID id) {
+    public ExpenseCategory create(ExpenseCategory expenseCategory, String username) {
         expenseCategory.setGlobalId(UUID.randomUUID());
-        User user = userService.findByGlobalId(id);
+        User user = userService.findByUsername(username);
         expenseCategory.setUser(user);
         return expenseCategoryRepository.save(expenseCategory);
     }
 
-    public List<ExpenseCategory> listByUser(UUID globalId) {
-        return expenseCategoryRepository.findByUserGlobalId(globalId);
+    public List<ExpenseCategory> listByUser(String username) {
+        return expenseCategoryRepository.findByUserUsername(username);
     }
 }
