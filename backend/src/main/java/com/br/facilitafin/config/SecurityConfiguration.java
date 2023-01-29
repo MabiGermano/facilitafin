@@ -17,6 +17,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,6 +29,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -60,8 +63,7 @@ class SecurityConfiguration {
                 .requestMatchers(HttpMethod.POST, "/api/v1/user", "/api/v1/user/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(getAuthenticationFilter(authenticationManagerResolver), UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .addFilter(new JWTAuthorizationFilter(authenticationManagerBuilder.getObject()));
     }
 
     @Bean
@@ -72,14 +74,14 @@ class SecurityConfiguration {
     @Bean
     InMemoryUserDetailsManager userDetailsManager() {
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withUsername("user").password("{noop}user").roles("USER").build());
-        manager.createUser(User.withUsername("admin").password("{noop}admin").roles("ADMIN").build());
+        manager.createUser(User.withUsername("user").password("{noop}").roles("USER").build());
+        manager.createUser(User.withUsername("admin").password("{noop}").roles("ADMIN").build());
         return manager;
     }
 
     public AuthenticationFilter getAuthenticationFilter(AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver) {
         AuthenticationConverter converter = request -> {
-            UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
+            Authentication authentication = getAuthentication(request);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return authentication;
         };
@@ -132,6 +134,34 @@ class SecurityConfiguration {
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder(BCryptPasswordEncoder.BCryptVersion.$2B);
+        return new BCryptPasswordEncoder();
+    }
+
+
+    @Bean
+    public DaoAuthenticationProvider authProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsManager());
+        authProvider.setPasswordEncoder(bCryptPasswordEncoder());
+        return authProvider;
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        UserDetails user =
+                User.withDefaultPasswordEncoder()
+                        .username("user")
+                        .password("password")
+                        .roles("USER")
+                        .build();
+
+        return new InMemoryUserDetailsManager(user);
+    }
+
+
+    protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+
+        auth.userDetailsService(userDetailsManager())
+                .passwordEncoder(bCryptPasswordEncoder());
     }
 }

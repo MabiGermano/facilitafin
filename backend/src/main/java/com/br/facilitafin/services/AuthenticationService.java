@@ -6,7 +6,7 @@ import com.br.facilitafin.config.SecurityConstants;
 import com.br.facilitafin.exception.NotAuthenticatedException;
 import com.br.facilitafin.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +21,12 @@ public class AuthenticationService {
     @Autowired
     BCryptPasswordEncoder bc;
 
+
+
     public String generateToken(User userLogin) {
         User user = userService.findByUsername(userLogin.getUsername());
         if(bc.matches(userLogin.getPassword(), user.getPassword())) {
+
             return JWT.create()
                     .withSubject(userLogin.getUsername())
                     .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
@@ -31,11 +34,9 @@ public class AuthenticationService {
         } else {
             throw new NotAuthenticatedException("Invalid user or password");
         }
-
-
     }
 
-    public String retrieveUserFromToken(String token) {
+    public String retrieveUserNameFromToken(String token) {
         String user = JWT.require(Algorithm.HMAC512(SecurityConstants.SECRET.getBytes()))
                 .build()
                 .verify(token.replace(SecurityConstants.TOKEN_PREFIX, ""))

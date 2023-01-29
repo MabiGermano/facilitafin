@@ -15,6 +15,7 @@ export default function Login() {
   useEffect(() => {
     const initClient = () => {
       gapi.client.init({
+        
         clientId: process.env.REACT_APP_CLIENT_ID,
         scope: "",
       });
@@ -76,7 +77,7 @@ export default function Login() {
             <GoogleLogin
               style={{boxShadow: "none", borderWidth: 2,  boderColor: "grey", boderStyle: "solid"}}
               className="google-button"
-              clientId={process.env.CLIENT_ID}
+              clientId={process.env.REACT_APP_CLIENT_ID}
               buttonText="Login com o Google"
               onSuccess={onSuccess}
               onFailure={onFailure}

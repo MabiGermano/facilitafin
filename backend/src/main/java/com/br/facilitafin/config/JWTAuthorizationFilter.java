@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+
     public JWTAuthorizationFilter(AuthenticationManager authManager) {
         super(authManager);
     }
@@ -51,8 +52,10 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                 // new arraylist means authorities
                 return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
             }
+
             return null;
         }
+
         return null;
     }
 }
