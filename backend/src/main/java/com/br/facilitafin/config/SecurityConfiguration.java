@@ -79,18 +79,6 @@ class SecurityConfiguration {
         return manager;
     }
 
-    public AuthenticationFilter getAuthenticationFilter(AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver) {
-        AuthenticationConverter converter = request -> {
-            Authentication authentication = getAuthentication(request);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            return authentication;
-        };
-        AuthenticationFilter filter = new AuthenticationFilter(authenticationManagerResolver, converter);
-        filter.setFailureHandler(((request, response, exception) -> exception.printStackTrace()));
-        filter.setSuccessHandler(((request, response, authentication) -> System.out.println("oioioioioioi")));
-        return filter;
-    }
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
@@ -110,22 +98,6 @@ class SecurityConfiguration {
         return http.httpBasic().and().build();
     }
 
-    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
-        String token = request.getHeader(SecurityConstants.HEADER_STRING);
-        if (StringUtils.hasText(token)) {
-            String username = JWT.require(Algorithm.HMAC512(SecurityConstants.SECRET.getBytes()))
-                    .build()
-                    .verify(token.replace(SecurityConstants.TOKEN_PREFIX, ""))
-                    .getSubject();
-
-            if (username != null) {
-                return new UsernamePasswordAuthenticationToken(username, null, new ArrayList<SimpleGrantedAuthority>());
-            }
-            return null;
-        }
-        return null;
-    }
-
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
@@ -137,31 +109,4 @@ class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-
-    @Bean
-    public DaoAuthenticationProvider authProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsManager());
-        authProvider.setPasswordEncoder(bCryptPasswordEncoder());
-        return authProvider;
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user =
-                User.withDefaultPasswordEncoder()
-                        .username("user")
-                        .password("password")
-                        .roles("USER")
-                        .build();
-
-        return new InMemoryUserDetailsManager(user);
-    }
-
-
-    protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-
-        auth.userDetailsService(userDetailsManager())
-                .passwordEncoder(bCryptPasswordEncoder());
-    }
 }
