@@ -1,6 +1,7 @@
 package com.br.facilitafin.services;
 
 import com.br.facilitafin.exception.NoExistentEntityException;
+import com.br.facilitafin.models.LoggedUser;
 import com.br.facilitafin.models.User;
 import com.br.facilitafin.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -33,6 +34,14 @@ public class UserService {
         if(opUser.isEmpty())
             throw new NoExistentEntityException("User"+ username +"not found");
         return opUser.get();
+    }
+
+    public LoggedUser findByLoggedUser(String username) {
+        User user = userRepository
+                    .findByUsername(username)
+                    .orElseThrow(() -> new NoExistentEntityException("User "+ username +" not found"));
+        LoggedUser loggedUser = new LoggedUser(user);
+        return loggedUser;
     }
 
     public User findByCredentials(String username, String password) {

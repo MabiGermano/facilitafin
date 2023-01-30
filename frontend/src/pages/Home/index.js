@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   FormControl,
   InputLabel,
@@ -12,27 +13,74 @@ import {
 } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import { Box } from "@mui/system";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SelectMonth from "../../components/SelectMonth";
 import AttachMoney from "@mui/icons-material/AttachMoney";
 import MoneyOff from "@mui/icons-material/MoneyOff";
 import Chart from "react-apexcharts";
 
+import api, { headersConfig } from "../../services/api";
 import "./style.css";
 
 export default function Home() {
-  const [category, setCategory] = useState("");
+  const [incomeCategory, setIncomeCategory] = useState("");
+  const [incomeDescription, setIncomeDescription] = useState("");
+  const [incomeAmount, setIncomeAmount] = useState(0);
+  const [incomeWarningMessage, setIncomeWarningMessage] = useState("");
+  const [incomeWarningType, setIncomeWarningType] = useState("");
+
+  const [expenseCategory, setExpenseCategory] = useState("");
   const [goal, setGoal] = useState("");
+  const [user, setUser] = useState({});
   const series = [44, 55, 41, 17, 15];
-  const labels = ['A', 'B', 'C', 'D', 'E'];
-  const options = {series, labels};
-  
+  const labels = ["A", "B", "C", "D", "E"];
+  const options = { series, labels };
+  console.log(localStorage.getItem(process.env.REACT_APP_HEADER_STRING));
+
+  useEffect(() => {
+    api.get("/api/v1/user", headersConfig)
+    .then(response => setUser(response.data))
+    .catch(err => console.log(err));
+  }, []);
+
+  const handleAddIncome = (event) => {
+    event.preventDefault();
+
+    api
+      .post(
+        "/api/v1/income",
+        {
+          category: incomeCategory,
+          amount: incomeAmount,
+          description: incomeDescription,
+        },
+        headersConfig
+      )
+      .then((response) => {
+        console.log(response.data);
+        setIncomeWarningType("success");
+        setIncomeWarningMessage("Receita registrada com sucesso")
+        setTimeout(() => {
+          setIncomeWarningMessage("");
+        }, 3000);
+      })
+      .catch((erro) => {
+        console.log(erro);
+        setIncomeWarningType("error");
+        setIncomeWarningMessage("Houve um erro no registro da receita");
+        setTimeout(() => {
+          setIncomeWarningMessage("");
+        }, 3000);
+      });
+  };
+
   return (
     <>
       <header>
         <h1>FacilitaFin</h1>
         <h2>
-          Oi Mabi! Por aqui já está tudo certo para facilitar suas finanças
+          Oi {user.name}! Por aqui já está tudo certo para facilitar suas
+          finanças
         </h2>
       </header>
       <main id="home">
@@ -40,13 +88,33 @@ export default function Home() {
           <Grid2 md={4}>
             <Box sx={{ boxShadow: 3, padding: 2 }} textAlign="center">
               <h3>Receita</h3>
+              <Grid2 item marginBottom={1} textAlign="center">
+                {incomeWarningMessage &&
+                  <Alert severity={incomeWarningType}>{incomeWarningMessage}</Alert>}
+              </Grid2>
+              <Grid2 container rowSpacing={2} justifyContent="space-between">
+                <Grid2 xs={5.8}>
+                  <TextField
+                    id="outlined-basic"
+                    label="Descrição"
+                    value={incomeDescription}
+                    onChange={(e) => setIncomeDescription(e.target.value)}
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Grid2>
+                <Grid2 xs={5.8}>
+                  <TextField
+                    id="outlined-basic"
+                    label="Valor"
+                    value={incomeAmount}
+                    onChange={(e) => setIncomeAmount(e.target.value)}
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Grid2>
+              </Grid2>
 
-              <TextField
-                id="outlined-basic"
-                label="Valor"
-                variant="outlined"
-                fullWidth
-              />
               <Grid2 container rowSpacing={2} justifyContent="space-between">
                 <Grid2 xs={5.8}>
                   <FormControl fullWidth>
@@ -56,13 +124,16 @@ export default function Home() {
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
-                      value={category}
+                      value={incomeCategory}
                       label="Categoria"
-                      onChange={setCategory}
+                      onChange={(e) => setIncomeCategory(e.target.value)}
                     >
-                      <MenuItem value={""}>Salario</MenuItem>
-                      <MenuItem value={""}>Freela</MenuItem>
-                      <MenuItem value={""}>Renda extra</MenuItem>
+                      {user.incomeCategories &&
+                        Object.keys(user.incomeCategories).map((key) => (
+                          <MenuItem value={key} key={`income-category-${key}`}>
+                            {user.incomeCategories[`${key}`]}
+                          </MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
                 </Grid2>
@@ -83,7 +154,7 @@ export default function Home() {
                   </FormControl>
                 </Grid2>
               </Grid2>
-              <Button variant="contained" fullWidth>
+              <Button variant="contained" fullWidth onClick={handleAddIncome}>
                 Adicionar
               </Button>
             </Box>
@@ -102,9 +173,9 @@ export default function Home() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={category}
+                  value={expenseCategory}
                   label="Categoria"
-                  onChange={setCategory}
+                  onChange={setExpenseCategory}
                 >
                   <MenuItem value={""}>Salario</MenuItem>
                   <MenuItem value={""}>Freela</MenuItem>

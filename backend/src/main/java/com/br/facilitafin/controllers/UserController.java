@@ -1,6 +1,7 @@
 package com.br.facilitafin.controllers;
 
 import com.br.facilitafin.config.SecurityConstants;
+import com.br.facilitafin.models.LoggedUser;
 import com.br.facilitafin.models.User;
 import com.br.facilitafin.services.AuthenticationService;
 import com.br.facilitafin.services.UserService;
@@ -38,12 +39,11 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<User> findOne(@RequestHeader(value = SecurityConstants.HEADER_STRING) String headerToken){
+    public ResponseEntity<LoggedUser> findOne(@RequestHeader(value = SecurityConstants.HEADER_STRING) String headerToken){
         log.warn(headerToken);
-
         String username = authenticationService.retrieveUserNameFromToken(headerToken);
         System.out.println(username);
-        User userResponse=userService.findByUsername(username);
+        LoggedUser userResponse=userService.findByLoggedUser(username);
 
         return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }

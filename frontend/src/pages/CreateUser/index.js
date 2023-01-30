@@ -17,8 +17,6 @@ export default function CreateUser() {
   //TODO: refactor this code
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("senha: ", password);
-    console.log("confirm senha: ", confirmPassword);
     if(password == confirmPassword) {
       api.post("/api/v1/user",
        { name, email, password }).then((_) => {

@@ -32,15 +32,14 @@ export default function Login() {
   const onFailure = (err) => {
     console.log("failed:", err);
   };
-  console.log(process.env.REACT_APP_CLIENT_ID);
 
   const handleLogin = (event) => {
     event.preventDefault();
-    console.log(password);
     api.post("/api/v1/user/login",
     { username, password })
-    .then((data) => {
-      console.log(data);
+    .then((response) => {
+     console.log(response.data);
+     localStorage.setItem(process.env.REACT_APP_HEADER_STRING, `${response.data}`)
      navigate("/home");
     })
     .catch((erro) => {
