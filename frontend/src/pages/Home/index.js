@@ -21,14 +21,14 @@ import Chart from "react-apexcharts";
 
 import api, { headersConfig } from "../../services/api";
 import "./style.css";
+import Header from "../../components/Header";
 
 export default function Home() {
-  const [incomeCategory, setIncomeCategory] = useState("");
-  const [incomeDescription, setIncomeDescription] = useState("");
-  const [incomeAmount, setIncomeAmount] = useState(0);
   const [incomeWarningMessage, setIncomeWarningMessage] = useState("");
   const [incomeWarningType, setIncomeWarningType] = useState("");
+  const [income, setIncome] = useState({category: "", description: "", amount: 0})
 
+  const [expense, setExpense] = useState({});
   const [expenseCategory, setExpenseCategory] = useState("");
   const [goal, setGoal] = useState("");
   const [user, setUser] = useState({});
@@ -49,11 +49,7 @@ export default function Home() {
     api
       .post(
         "/api/v1/income",
-        {
-          category: incomeCategory,
-          amount: incomeAmount,
-          description: incomeDescription,
-        },
+        income,
         headersConfig
       )
       .then((response) => {
@@ -76,13 +72,7 @@ export default function Home() {
 
   return (
     <>
-      <header>
-        <h1>FacilitaFin</h1>
-        <h2>
-          Oi {user.name}! Por aqui já está tudo certo para facilitar suas
-          finanças
-        </h2>
-      </header>
+      <Header user={user}/>
       <main id="home">
         <Grid2 container>
           <Grid2 md={4}>
@@ -97,8 +87,8 @@ export default function Home() {
                   <TextField
                     id="outlined-basic"
                     label="Descrição"
-                    value={incomeDescription}
-                    onChange={(e) => setIncomeDescription(e.target.value)}
+                    value={income.description}
+                    onChange={(e) => setIncome({...income, description: e.target.value})}
                     variant="outlined"
                     fullWidth
                   />
@@ -107,8 +97,8 @@ export default function Home() {
                   <TextField
                     id="outlined-basic"
                     label="Valor"
-                    value={incomeAmount}
-                    onChange={(e) => setIncomeAmount(e.target.value)}
+                    value={income.amount}
+                    onChange={(e) => setIncome({...income, amount: e.target.value})}
                     variant="outlined"
                     fullWidth
                   />
@@ -124,9 +114,9 @@ export default function Home() {
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
-                      value={incomeCategory}
+                      value={income.category}
                       label="Categoria"
-                      onChange={(e) => setIncomeCategory(e.target.value)}
+                      onChange={(e) => setIncome({...income, category: e.target.value})}
                     >
                       {user.incomeCategories &&
                         Object.keys(user.incomeCategories).map((key) => (

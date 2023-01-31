@@ -1,0 +1,13 @@
+main#user-settings {
+    width: 100%;
+    height: 82%;
+    display: block;
+}
+
+main#user-settings > div {
+    height: 100%;
+}
+
+ul > h4 {
+    padding-left: 1rem;
+}
