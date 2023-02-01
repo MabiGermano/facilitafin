@@ -29,6 +29,7 @@ public class ExpenseCategoryService {
     }
 
     public List<ExpenseCategory> listByUser(String username) {
-        return expenseCategoryRepository.findByUserUsername(username);
+        List<ExpenseCategory> list = expenseCategoryRepository.findByUserUsername(username);
+        return list;
     }
 }

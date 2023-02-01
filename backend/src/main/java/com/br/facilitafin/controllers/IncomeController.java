@@ -2,6 +2,7 @@ package com.br.facilitafin.controllers;
 
 
 import com.br.facilitafin.config.SecurityConstants;
+import com.br.facilitafin.models.FinancialRegister;
 import com.br.facilitafin.models.Income;
 import com.br.facilitafin.services.AuthenticationService;
 import com.br.facilitafin.services.IncomeService;
@@ -25,10 +26,10 @@ public class IncomeController {
     AuthenticationService authenticationService;
 
     @PostMapping
-    public ResponseEntity<String> create(@RequestBody Income income, @RequestHeader(value = SecurityConstants.HEADER_STRING) String headerToken) {
+    public ResponseEntity<FinancialRegister> create(@RequestBody Income income, @RequestHeader(value = SecurityConstants.HEADER_STRING) String headerToken) {
         String username = authenticationService.retrieveUserNameFromToken(headerToken);
         Income incomeResponse=incomeService.create(income, username);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Income created successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body(new FinancialRegister(incomeResponse));
     }
 
     @GetMapping

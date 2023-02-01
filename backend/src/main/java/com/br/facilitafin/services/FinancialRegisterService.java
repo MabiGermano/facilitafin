@@ -5,10 +5,7 @@ import com.br.facilitafin.repositories.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,13 +15,15 @@ public class FinancialRegisterService {
     @Autowired
     IncomeService incomeService;
 
-    public FinancialRegister load(String username) {
-        FinancialRegister financialRegister = new FinancialRegister();
+    public List<FinancialRegister> load(String username) {
         List<Expense> expenses = expenseService.listByUser(username);
         List<Income> incomes = incomeService.listByUser(username);
-        financialRegister.setExpenses(expenses);
-        financialRegister.setIncomes(incomes);
-        return financialRegister;
+        List<FinancialRegister> list = expenses.stream()
+                .map(FinancialRegister::new)
+                .collect(Collectors.toList());
+        list.addAll(incomes.stream().map(FinancialRegister::new).collect(Collectors.toList()));
+        Collections.sort(list);
+        return list;
     }
     public Map<String, Double> findExpenseAnalysis(String username) {
         List<Expense> expenses = expenseService.listByUser(username);

@@ -22,14 +22,26 @@ import Chart from "react-apexcharts";
 import api, { headersConfig } from "../../services/api";
 import "./style.css";
 import Header from "../../components/Header";
+import { Paid } from "@mui/icons-material";
 
 export default function Home() {
   const [incomeWarningMessage, setIncomeWarningMessage] = useState("");
   const [incomeWarningType, setIncomeWarningType] = useState("");
-  const [income, setIncome] = useState({category: "", description: "", amount: 0})
+  const [expenseWarningMessage, setExpenseWarningMessage] = useState("");
+  const [expenseWarningType, setExpenseWarningType] = useState("");
+  const [income, setIncome] = useState({
+    category: "",
+    description: "",
+    amount: 0,
+  });
 
-  const [expense, setExpense] = useState({});
-  const [expenseCategory, setExpenseCategory] = useState("");
+  const [expense, setExpense] = useState({
+    description: "",
+    amount: 0,
+    category: "",
+  });
+  const [financialRegisterList, setFinancialRegisterList] = useState([]);
+
   const [goal, setGoal] = useState("");
   const [user, setUser] = useState({});
   const series = [44, 55, 41, 17, 15];
@@ -38,24 +50,28 @@ export default function Home() {
   console.log(localStorage.getItem(process.env.REACT_APP_HEADER_STRING));
 
   useEffect(() => {
-    api.get("/api/v1/user", headersConfig)
-    .then(response => setUser(response.data))
-    .catch(err => console.log(err));
+    api
+      .get("/api/v1/user", headersConfig)
+      .then((response) => setUser(response.data))
+      .catch((err) => console.log(err));
+
+    api
+      .get("api/v1/financial-register", headersConfig)
+      .then((response) => {
+        console.log(response);
+        setFinancialRegisterList(response.data)})
+      .catch((err) => console.log(err));
   }, []);
 
   const handleAddIncome = (event) => {
     event.preventDefault();
 
     api
-      .post(
-        "/api/v1/income",
-        income,
-        headersConfig
-      )
+      .post("/api/v1/income", income, headersConfig)
       .then((response) => {
-        console.log(response.data);
+        setFinancialRegisterList([...financialRegisterList, response.data])
         setIncomeWarningType("success");
-        setIncomeWarningMessage("Receita registrada com sucesso")
+        setIncomeWarningMessage("Receita registrada com sucesso");
         setTimeout(() => {
           setIncomeWarningMessage("");
         }, 3000);
@@ -70,17 +86,43 @@ export default function Home() {
       });
   };
 
+  const handleAddExpense = (event) => {
+    event.preventDefault();
+
+    api
+      .post("/api/v1/expense", expense, headersConfig)
+      .then((response) => {
+        setFinancialRegisterList([...financialRegisterList, response.data])
+        setExpenseWarningType("success");
+        setExpenseWarningMessage("Despesa registrada com sucesso");
+        setTimeout(() => {
+          setExpenseWarningMessage("");
+        }, 3000);
+      })
+      .catch((erro) => {
+        console.log(erro);
+        setExpenseWarningType("error");
+        setExpenseWarningMessage("Houve um erro no registro da despesa");
+        setTimeout(() => {
+          setExpenseWarningMessage("");
+        }, 3000);
+      });
+  };
+
   return (
     <>
-      <Header user={user}/>
+      <Header user={user} />
       <main id="home">
         <Grid2 container>
           <Grid2 md={4}>
             <Box sx={{ boxShadow: 3, padding: 2 }} textAlign="center">
               <h3>Receita</h3>
               <Grid2 item marginBottom={1} textAlign="center">
-                {incomeWarningMessage &&
-                  <Alert severity={incomeWarningType}>{incomeWarningMessage}</Alert>}
+                {incomeWarningMessage && (
+                  <Alert severity={incomeWarningType}>
+                    {incomeWarningMessage}
+                  </Alert>
+                )}
               </Grid2>
               <Grid2 container rowSpacing={2} justifyContent="space-between">
                 <Grid2 xs={5.8}>
@@ -88,7 +130,9 @@ export default function Home() {
                     id="outlined-basic"
                     label="Descrição"
                     value={income.description}
-                    onChange={(e) => setIncome({...income, description: e.target.value})}
+                    onChange={(e) =>
+                      setIncome({ ...income, description: e.target.value })
+                    }
                     variant="outlined"
                     fullWidth
                   />
@@ -98,7 +142,9 @@ export default function Home() {
                     id="outlined-basic"
                     label="Valor"
                     value={income.amount}
-                    onChange={(e) => setIncome({...income, amount: e.target.value})}
+                    onChange={(e) =>
+                      setIncome({ ...income, amount: e.target.value })
+                    }
                     variant="outlined"
                     fullWidth
                   />
@@ -116,7 +162,9 @@ export default function Home() {
                       id="demo-simple-select"
                       value={income.category}
                       label="Categoria"
-                      onChange={(e) => setIncome({...income, category: e.target.value})}
+                      onChange={(e) =>
+                        setIncome({ ...income, category: e.target.value })
+                      }
                     >
                       {user.incomeCategories &&
                         Object.keys(user.incomeCategories).map((key) => (
@@ -151,28 +199,69 @@ export default function Home() {
 
             <Box sx={{ boxShadow: 3, padding: 2 }} textAlign="center">
               <h3>Despesa</h3>
-              <TextField
-                id="outlined-basic"
-                label="Valor"
-                variant="outlined"
-                fullWidth
-              />
-
+              <Grid2 item marginBottom={1} textAlign="center">
+                {expenseWarningMessage && (
+                  <Alert severity={expenseWarningType}>
+                    {expenseWarningMessage}
+                  </Alert>
+                )}
+              </Grid2>
+              <Grid2 container rowSpacing={2} justifyContent="space-between">
+                <Grid2 xs={5.8}>
+                  <TextField
+                    id="outlined-basic"
+                    label="Descrição"
+                    value={expense.description}
+                    onChange={(e) =>
+                      setExpense({ ...expense, description: e.target.value })
+                    }
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Grid2>
+                <Grid2 xs={5.8}>
+                  <TextField
+                    id="outlined-basic"
+                    label="Valor"
+                    variant="outlined"
+                    value={expense.amount}
+                    onChange={(e) =>
+                      setExpense({ ...expense, amount: e.target.value })
+                    }
+                    fullWidth
+                  />
+                </Grid2>
+              </Grid2>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Categoria</InputLabel>
+                <InputLabel id="expense-category-label">Categoria</InputLabel>
                 <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={expenseCategory}
+                  labelId="expense-category-label"
+                  id="expense-category"
+                  value={expense.category}
                   label="Categoria"
-                  onChange={setExpenseCategory}
+                  onChange={(e) =>
+                    setExpense({ ...expense, category: e.target.value })
+                  }
                 >
-                  <MenuItem value={""}>Salario</MenuItem>
-                  <MenuItem value={""}>Freela</MenuItem>
-                  <MenuItem value={""}>Renda extra</MenuItem>
+                  {user.expenseCategories &&
+                    user.expenseCategories.map((category) => {
+                      return (
+                        <MenuItem
+                          value={category}
+                          key={`expense-category-${category.id}`}
+                        >
+                          {category.description}
+                        </MenuItem>
+                      );
+                    })}
                 </Select>
               </FormControl>
-              <Button variant="contained" color="secondary" fullWidth>
+              <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                onClick={handleAddExpense}
+              >
                 Adicionar
               </Button>
             </Box>
@@ -183,25 +272,24 @@ export default function Home() {
               <h3>Registros do mês</h3>
               <SelectMonth />
               <List component="nav" aria-label="main mailbox folders">
-                {/* List button receita */}
-                <ListItemButton component="a" href="#simple-list">
-                  <ListItemIcon>
-                    <AttachMoney color="success" />
-                  </ListItemIcon>
-                  <ListItemText primary="R$ 567,52" />
-                  <ListItemText primary="Feira do mês" />
-                  <ListItemText primary="Essenciais" />
-                </ListItemButton>
-
-                {/* List button despesa */}
-                <ListItemButton component="a" href="#simple-list">
-                  <ListItemIcon>
-                    <MoneyOff color="error" />
-                  </ListItemIcon>
-                  <ListItemText primary="R$ 54,85" />
-                  <ListItemText primary="Happy hour" />
-                  <ListItemText primary="Essenciais" />
-                </ListItemButton>
+                {financialRegisterList.length > 0 &&
+                  financialRegisterList.map((financialRegister, index) => {
+                    return  <ListItemButton
+                      key={`financial-register-${index}`}
+                      component="a"
+                    >
+                      <ListItemIcon>
+                        {financialRegister.type === "INCOME" ? (
+                          <AttachMoney color="success" />
+                        ) : (
+                          <MoneyOff color="error" />
+                        )}
+                      </ListItemIcon>
+                      <ListItemText primary={`R$ ${financialRegister.amount}`} />
+                      <ListItemText primary={financialRegister.description} />
+                      <ListItemText primary={financialRegister.category} />
+                    </ListItemButton>;
+                  })}
               </List>
             </Box>
           </Grid2>

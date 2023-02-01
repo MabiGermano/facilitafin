@@ -15,10 +15,13 @@ import LabelIcon from "@mui/icons-material/Label";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import Header from "../../components/Header";
 import "./style.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box } from "@mui/system";
+import ExpenseCategorySetting from "./ExpenseCategorySetting";
+import api, { headersConfig } from "../../services/api";
 
-const renderPersonalInformation = (user) => {
+const PersonalInformationSetting = (props) => {
+    const {user} = props;
   return (
     <Grid2 rowSpacing={2} md={9.9} textAlign="center">
       <Grid2 container justifyContent="center">
@@ -56,49 +59,16 @@ const renderPersonalInformation = (user) => {
   );
 };
 
-const renderExpenseCategory = () => {
-  return (
-    <Grid2 rowSpacing={2} md={9.9} textAlign="center">
-      <Grid2 container justifyContent="center">
-        <Grid2 md={12}>
-          <h2>Categorias de despesas</h2>
-        </Grid2>
-        <Grid2 md={10}>
-          <Box sx={{ boxShadow: 3, padding: 2 }} textAlign="center">
-            <h3>Nova categoria</h3>
-            <FormControl fullWidth>
-              <Grid2 container rowSpacing={2} justifyContent="space-between">
-                <Grid2 md={12}>
-                  <TextField
-                    id="outlined-basic"
-                    label="Descrição"
-                    variant="outlined"
-                    fullWidth
-                  />
-                </Grid2>
-                <Grid2 md={12}>
-                  <Button variant="contained" color="secondary" fullWidth>
-                    Adicionar
-                  </Button>
-                </Grid2>
-              </Grid2>
-            </FormControl>
-          </Box>
-        </Grid2>
-      </Grid2>
-    </Grid2>
-  );
-};
-
-export default function UserSettings(props) {
-  //   const { user } = props;
-  const user = {
-    name: "mabi",
-    username: "mabi@teste.com",
-    email: "mabi@teste.com",
-  };
-  const [content, setContent] = useState(renderPersonalInformation(user));
+export default function UserSettings() {
+  const [user, setUser] = useState({});
   const [selectedMenuItem, setSelectedMenuItem] = useState("profile");
+
+  useEffect(() => {
+    api
+      .get("/api/v1/user", headersConfig)
+      .then((response) => setUser(response.data))
+      .catch((err) => console.log(err))
+  }, []);
 
   return (
     <>
@@ -113,7 +83,6 @@ export default function UserSettings(props) {
                   <ListItemButton
                     selected={selectedMenuItem === "profile"}
                     onClick={() => {
-                      setContent(renderPersonalInformation(user));
                       setSelectedMenuItem("profile");
                     }}
                   >
@@ -136,7 +105,6 @@ export default function UserSettings(props) {
                   <ListItemButton
                     selected={selectedMenuItem === "expense-category"}
                     onClick={() => {
-                      setContent(renderExpenseCategory());
                       setSelectedMenuItem("expense-category");
                     }}
                   >
@@ -150,7 +118,13 @@ export default function UserSettings(props) {
             </nav>
           </Grid2>
           <Divider orientation="vertical" />
-          {content}
+          {selectedMenuItem === "profile" ? (
+            <PersonalInformationSetting user={user}/>
+          ) : selectedMenuItem === "expense-category" ? (
+            <ExpenseCategorySetting />
+          ) : (
+            ""
+          )}
         </Grid2>
       </main>
     </>

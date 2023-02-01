@@ -16,6 +16,7 @@ public class LoggedUser {
     private String name;
     private String email;
     private Map<IncomeCategory, String> incomeCategories;
+    private List<ExpenseCategory> expenseCategories = new ArrayList<ExpenseCategory>();
 
     public LoggedUser(User user) {
         this.name = user.getName();

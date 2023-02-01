@@ -4,6 +4,7 @@ import com.br.facilitafin.config.SecurityConstants;
 import com.br.facilitafin.models.LoggedUser;
 import com.br.facilitafin.models.User;
 import com.br.facilitafin.services.AuthenticationService;
+import com.br.facilitafin.services.ExpenseCategoryService;
 import com.br.facilitafin.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class UserController {
 
     @Autowired
     AuthenticationService authenticationService;
+
+    @Autowired
+    ExpenseCategoryService expenseCategoryService;
 
     @PostMapping
     public ResponseEntity<String> create(@RequestBody User user) {
@@ -44,7 +48,7 @@ public class UserController {
         String username = authenticationService.retrieveUserNameFromToken(headerToken);
         System.out.println(username);
         LoggedUser userResponse=userService.findByLoggedUser(username);
-
+        userResponse.setExpenseCategories(expenseCategoryService.listByUser(username));
         return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }
 }

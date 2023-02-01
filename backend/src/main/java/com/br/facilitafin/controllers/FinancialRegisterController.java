@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,9 +24,9 @@ public class FinancialRegisterController {
     AuthenticationService authenticationService;
 
     @GetMapping
-    public ResponseEntity<FinancialRegister> load(@RequestHeader(value = SecurityConstants.HEADER_STRING) String headerToken) {
+    public ResponseEntity<List<FinancialRegister>> load(@RequestHeader(value = SecurityConstants.HEADER_STRING) String headerToken) {
         String username = authenticationService.retrieveUserNameFromToken(headerToken);
-        FinancialRegister financialRegister = financialRegisterService.load(username);
+        List<FinancialRegister> financialRegister = financialRegisterService.load(username);
         return ResponseEntity.status(HttpStatus.OK).body(financialRegister);
     }
 

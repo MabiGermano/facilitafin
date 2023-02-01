@@ -26,6 +26,7 @@ public class ExpenseCategoryController {
 
     @PostMapping
     public ResponseEntity<String> create(@RequestBody ExpenseCategory expenseCategory, @RequestHeader(value = SecurityConstants.HEADER_STRING) String headerToken) {
+        System.out.println(headerToken);
         String username = authenticationService.retrieveUserNameFromToken(headerToken);
         ExpenseCategory expenseCategoryResponse=expenseCategoryService.create(expenseCategory,username);
         return ResponseEntity.status(HttpStatus.CREATED).body("Expense category created successfully");
