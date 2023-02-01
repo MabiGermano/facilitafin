@@ -22,7 +22,6 @@ import Chart from "react-apexcharts";
 import api, { headersConfig } from "../../services/api";
 import "./style.css";
 import Header from "../../components/Header";
-import { Paid } from "@mui/icons-material";
 
 export default function Home() {
   const [incomeWarningMessage, setIncomeWarningMessage] = useState("");
@@ -48,16 +47,17 @@ export default function Home() {
 
   const [goal, setGoal] = useState("");
   const [user, setUser] = useState({});
-  console.log(localStorage.getItem(process.env.REACT_APP_HEADER_STRING));
-
+  
   useEffect(() => {
-    api
-      .get("/api/v1/user", headersConfig)
-      .then((response) => setUser(response.data))
-      .catch((err) => console.log(err));
+    console.log("Home: ", localStorage.getItem(process.env.REACT_APP_HEADER_STRING));
 
     api
-      .get("api/v1/financial-register", headersConfig)
+      .get("/api/v1/user", headersConfig())
+      .then((response) => setUser(response.data))
+      .catch((err) => localStorage.removeItem(process.env.REACT_APP_HEADER_STRING));
+
+    api
+      .get("api/v1/financial-register", headersConfig())
       .then((response) => {
         console.log(response);
         setFinancialRegisterList(response.data);
@@ -65,7 +65,7 @@ export default function Home() {
       .catch((err) => console.log(err));
 
     api
-      .get("api/v1/financial-register/analysis", headersConfig)
+      .get("api/v1/financial-register/analysis", headersConfig())
       .then((response) => {
         console.log(response);
         setExpenseAnalysis({
@@ -80,7 +80,7 @@ export default function Home() {
     event.preventDefault();
 
     api
-      .post("/api/v1/income", income, headersConfig)
+      .post("/api/v1/income", income, headersConfig())
       .then((response) => {
         setFinancialRegisterList([...financialRegisterList, response.data]);
         setIncomeWarningType("success");
@@ -103,16 +103,13 @@ export default function Home() {
     event.preventDefault();
 
     api
-      .post("/api/v1/expense", expense, headersConfig)
+      .post("/api/v1/expense", expense, headersConfig())
       .then((response) => {
         setFinancialRegisterList([...financialRegisterList, response.data]);
-        console.log(response.data);
-        console.log(expenseAnalysis.labels);
         const categoryIndex = expenseAnalysis.labels.indexOf(
           response.data.category
         );
 
-        console.log("indexOf: ", categoryIndex);
         if (categoryIndex >= 0) {
           const newSeries = [...expenseAnalysis.series];
           newSeries[categoryIndex] = expenseAnalysis.series[categoryIndex] + response.data.amount;

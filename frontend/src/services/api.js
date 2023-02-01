@@ -5,8 +5,10 @@ const api = axios.create({
 
 export default api;
 
-export const headersConfig = {
+export const headersConfig = () => {
+  return {
     headers: {
       Authorization : `Bearer ${localStorage.getItem(process.env.REACT_APP_HEADER_STRING)}`
     }
+  };
   };

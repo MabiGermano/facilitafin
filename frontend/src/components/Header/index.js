@@ -1,11 +1,19 @@
 import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { IconButton } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = (props) => {
   const { user } = props;
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem(process.env.REACT_APP_HEADER_STRING)
+    navigate("/");
+  }
+
   return (
     <header>
       <Grid2 container marginBottom={5}>
@@ -34,6 +42,9 @@ const Header = (props) => {
                   <SettingsIcon fontSize="large" />
                 </IconButton>
               </Link>
+              <IconButton aria-label="settings" size="large" onClick={handleLogout}>
+                  <LogoutIcon fontSize="large" />
+                </IconButton>
             </nav>
           </Grid2>
         </Grid2>

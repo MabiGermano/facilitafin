@@ -16,4 +16,7 @@ public class Goal {
     private String description;
     private Double northStar;
     private Double cumulative;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

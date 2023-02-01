@@ -38,8 +38,7 @@ export default function Login() {
     api.post("/api/v1/user/login",
     { username, password })
     .then((response) => {
-     console.log(response.data);
-     localStorage.setItem(process.env.REACT_APP_HEADER_STRING, `${response.data}`)
+     localStorage.setItem(process.env.REACT_APP_HEADER_STRING, `${response.data}`) 
      navigate("/home");
     })
     .catch((erro) => {

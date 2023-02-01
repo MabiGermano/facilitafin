@@ -12,7 +12,7 @@ const ExpenseCategorySetting = () => {
     console.log("handleSubmit");
     event.preventDefault();
     api
-      .post("/api/v1/expense-category", { description }, headersConfig)
+      .post("/api/v1/expense-category", { description }, headersConfig())
       .then((response) => {
         console.log(response.data);
         setWarningType("success");

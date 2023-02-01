@@ -1,13 +1,11 @@
 import {
   Button,
   Divider,
-  FormControl,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  TextField,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import InsightsIcon from "@mui/icons-material/Insights";
@@ -16,12 +14,12 @@ import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import Header from "../../components/Header";
 import "./style.css";
 import { useEffect, useState } from "react";
-import { Box } from "@mui/system";
 import ExpenseCategorySetting from "./ExpenseCategorySetting";
 import api, { headersConfig } from "../../services/api";
+import GoalSetting from "./GoalSetting";
 
 const PersonalInformationSetting = (props) => {
-    const {user} = props;
+  const { user } = props;
   return (
     <Grid2 rowSpacing={2} md={9.9} textAlign="center">
       <Grid2 container justifyContent="center">
@@ -65,9 +63,11 @@ export default function UserSettings() {
 
   useEffect(() => {
     api
-      .get("/api/v1/user", headersConfig)
+      .get("/api/v1/user", headersConfig())
       .then((response) => setUser(response.data))
-      .catch((err) => console.log(err))
+      .catch((err) =>
+        localStorage.removeItem(process.env.REACT_APP_HEADER_STRING)
+      );
   }, []);
 
   return (
@@ -94,7 +94,12 @@ export default function UserSettings() {
                 </ListItem>
                 <h4>Customizar workspace</h4>
                 <ListItem disablePadding>
-                  <ListItemButton selected={selectedMenuItem === "goal"}>
+                  <ListItemButton
+                    selected={selectedMenuItem === "goal"}
+                    onClick={() => {
+                      setSelectedMenuItem("goal");
+                    }}
+                  >
                     <ListItemIcon>
                       <InsightsIcon />
                     </ListItemIcon>
@@ -119,9 +124,11 @@ export default function UserSettings() {
           </Grid2>
           <Divider orientation="vertical" />
           {selectedMenuItem === "profile" ? (
-            <PersonalInformationSetting user={user}/>
+            <PersonalInformationSetting user={user} />
           ) : selectedMenuItem === "expense-category" ? (
             <ExpenseCategorySetting />
+          ) : selectedMenuItem === "goal" ? (
+            <GoalSetting />
           ) : (
             ""
           )}
