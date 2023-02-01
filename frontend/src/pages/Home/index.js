@@ -41,12 +41,13 @@ export default function Home() {
     category: "",
   });
   const [financialRegisterList, setFinancialRegisterList] = useState([]);
+  const [expenseAnalysis, setExpenseAnalysis] = useState({
+    labels: [],
+    series: [],
+  });
 
   const [goal, setGoal] = useState("");
   const [user, setUser] = useState({});
-  const series = [44, 55, 41, 17, 15];
-  const labels = ["A", "B", "C", "D", "E"];
-  const options = { series, labels };
   console.log(localStorage.getItem(process.env.REACT_APP_HEADER_STRING));
 
   useEffect(() => {
@@ -59,7 +60,19 @@ export default function Home() {
       .get("api/v1/financial-register", headersConfig)
       .then((response) => {
         console.log(response);
-        setFinancialRegisterList(response.data)})
+        setFinancialRegisterList(response.data);
+      })
+      .catch((err) => console.log(err));
+
+    api
+      .get("api/v1/financial-register/analysis", headersConfig)
+      .then((response) => {
+        console.log(response);
+        setExpenseAnalysis({
+          labels: Object.keys(response.data),
+          series: Object.values(response.data),
+        });
+      })
       .catch((err) => console.log(err));
   }, []);
 
@@ -69,7 +82,7 @@ export default function Home() {
     api
       .post("/api/v1/income", income, headersConfig)
       .then((response) => {
-        setFinancialRegisterList([...financialRegisterList, response.data])
+        setFinancialRegisterList([...financialRegisterList, response.data]);
         setIncomeWarningType("success");
         setIncomeWarningMessage("Receita registrada com sucesso");
         setTimeout(() => {
@@ -92,7 +105,24 @@ export default function Home() {
     api
       .post("/api/v1/expense", expense, headersConfig)
       .then((response) => {
-        setFinancialRegisterList([...financialRegisterList, response.data])
+        setFinancialRegisterList([...financialRegisterList, response.data]);
+        console.log(response.data);
+        console.log(expenseAnalysis.labels);
+        const categoryIndex = expenseAnalysis.labels.indexOf(
+          response.data.category
+        );
+
+        console.log("indexOf: ", categoryIndex);
+        if (categoryIndex >= 0) {
+          const newSeries = [...expenseAnalysis.series];
+          newSeries[categoryIndex] = expenseAnalysis.series[categoryIndex] + response.data.amount;
+          setExpenseAnalysis({labels: expenseAnalysis.labels, series: newSeries});
+        } else {
+          setExpenseAnalysis({
+            labels: [...expenseAnalysis.labels, response.data.category],
+            series: [...expenseAnalysis.series, response.data.amount],
+          });
+        }
         setExpenseWarningType("success");
         setExpenseWarningMessage("Despesa registrada com sucesso");
         setTimeout(() => {
@@ -274,21 +304,25 @@ export default function Home() {
               <List component="nav" aria-label="main mailbox folders">
                 {financialRegisterList.length > 0 &&
                   financialRegisterList.map((financialRegister, index) => {
-                    return  <ListItemButton
-                      key={`financial-register-${index}`}
-                      component="a"
-                    >
-                      <ListItemIcon>
-                        {financialRegister.type === "INCOME" ? (
-                          <AttachMoney color="success" />
-                        ) : (
-                          <MoneyOff color="error" />
-                        )}
-                      </ListItemIcon>
-                      <ListItemText primary={`R$ ${financialRegister.amount}`} />
-                      <ListItemText primary={financialRegister.description} />
-                      <ListItemText primary={financialRegister.category} />
-                    </ListItemButton>;
+                    return (
+                      <ListItemButton
+                        key={`financial-register-${index}`}
+                        component="a"
+                      >
+                        <ListItemIcon>
+                          {financialRegister.type === "INCOME" ? (
+                            <AttachMoney color="success" />
+                          ) : (
+                            <MoneyOff color="error" />
+                          )}
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={`R$ ${financialRegister.amount}`}
+                        />
+                        <ListItemText primary={financialRegister.description} />
+                        <ListItemText primary={financialRegister.category} />
+                      </ListItemButton>
+                    );
                   })}
               </List>
             </Box>
@@ -298,9 +332,9 @@ export default function Home() {
               <h3>Análise despesa/mês</h3>
               <div id="donut-chart">
                 <Chart
-                  options={options}
-                  series={series}
-                  labels={labels}
+                  options={expenseAnalysis}
+                  series={expenseAnalysis.series}
+                  labels={expenseAnalysis.labels}
                   type="donut"
                   width="380"
                 />
