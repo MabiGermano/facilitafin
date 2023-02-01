@@ -32,3 +32,11 @@ main .MuiBox-root {
 main .MuiBox-root > div {
     margin-bottom: 1rem;
 }
+
+main .MuiBox-root > div.progress-label{
+    margin: 0;
+}
+
+main .MuiBox-root > div.progress-label-bg-color {
+    background-color: transparent;
+}

@@ -2,8 +2,10 @@ package com.br.facilitafin.services;
 
 import com.br.facilitafin.exception.NoExistentEntityException;
 import com.br.facilitafin.models.Expense;
+import com.br.facilitafin.models.Goal;
 import com.br.facilitafin.models.Income;
 import com.br.facilitafin.models.User;
+import com.br.facilitafin.repositories.GoalRepository;
 import com.br.facilitafin.repositories.IncomeRepository;
 import com.br.facilitafin.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +23,17 @@ public class IncomeService {
     IncomeRepository incomeRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    GoalRepository goalRepository;
 
     public Income create(Income income, String username) {
         income.setGlobalId(UUID.randomUUID());
         User user = userRepository.findByUsername(username).orElseThrow(() -> new NoExistentEntityException("No user found on database"));
         income.setUser(user);
         income.setCreatedAt(new Date());
+        Goal goal = income.getGoal();
+        goal.setCumulative(goal.getCumulative() + income.getAmount());
+        goalRepository.save(goal);
         return incomeRepository.save(income);
     }
 

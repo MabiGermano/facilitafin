@@ -14,8 +14,8 @@ public class Goal {
     @Column(unique = true)
     private UUID globalId;
     private String description;
-    private Double northStar;
-    private Double cumulative;
+    private Double northStar = 0D;
+    private Double cumulative = 0D;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

@@ -5,6 +5,7 @@ import com.br.facilitafin.models.LoggedUser;
 import com.br.facilitafin.models.User;
 import com.br.facilitafin.services.AuthenticationService;
 import com.br.facilitafin.services.ExpenseCategoryService;
+import com.br.facilitafin.services.GoalService;
 import com.br.facilitafin.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class UserController {
     @Autowired
     ExpenseCategoryService expenseCategoryService;
 
+    @Autowired
+    GoalService goalService;
+
     @PostMapping
     public ResponseEntity<String> create(@RequestBody User user) {
         User userResponse=userService.create(user);
@@ -49,6 +53,7 @@ public class UserController {
         System.out.println(username);
         LoggedUser userResponse=userService.findByLoggedUser(username);
         userResponse.setExpenseCategories(expenseCategoryService.listByUser(username));
+        userResponse.setGoals(goalService.listByUser(username));
         return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }
 }

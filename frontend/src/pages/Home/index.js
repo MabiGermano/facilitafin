@@ -1,15 +1,18 @@
 import {
   Alert,
   Button,
+  CircularProgress,
   FormControl,
   InputLabel,
   List,
+  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import { Box } from "@mui/system";
@@ -22,6 +25,46 @@ import Chart from "react-apexcharts";
 import api, { headersConfig } from "../../services/api";
 import "./style.css";
 import Header from "../../components/Header";
+
+const GoalProgress = (props) => {
+  const { key, goal } = props;
+
+  const progress = Math.round((goal.cumulative * 100) / goal.northStar);
+  return (
+    <Box
+      key={key}
+      sx={{ position: "relative", display: "inline-flex" }}
+      textAlign="center"
+    >
+      <CircularProgress
+        color={progress >= 100 ? "success" : "primary"}
+        variant="determinate"
+        value={progress >= 100 ? 100 : progress}
+        size={50}
+      />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: "absolute",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        className="progress-label-bg-color"
+      >
+        <Typography
+          variant="caption"
+          component="div"
+          color="text.secondary"
+          className="progress-label"
+        >{`${progress >= 100 ? 100 : progress}%`}</Typography>
+      </Box>
+    </Box>
+  );
+};
 
 export default function Home() {
   const [incomeWarningMessage, setIncomeWarningMessage] = useState("");
@@ -45,16 +88,20 @@ export default function Home() {
     series: [],
   });
 
-  const [goal, setGoal] = useState("");
   const [user, setUser] = useState({});
-  
+
   useEffect(() => {
-    console.log("Home: ", localStorage.getItem(process.env.REACT_APP_HEADER_STRING));
+    console.log(
+      "Home: ",
+      localStorage.getItem(process.env.REACT_APP_HEADER_STRING)
+    );
 
     api
       .get("/api/v1/user", headersConfig())
       .then((response) => setUser(response.data))
-      .catch((err) => localStorage.removeItem(process.env.REACT_APP_HEADER_STRING));
+      .catch((err) =>
+        localStorage.removeItem(process.env.REACT_APP_HEADER_STRING)
+      );
 
     api
       .get("api/v1/financial-register", headersConfig())
@@ -112,8 +159,12 @@ export default function Home() {
 
         if (categoryIndex >= 0) {
           const newSeries = [...expenseAnalysis.series];
-          newSeries[categoryIndex] = expenseAnalysis.series[categoryIndex] + response.data.amount;
-          setExpenseAnalysis({labels: expenseAnalysis.labels, series: newSeries});
+          newSeries[categoryIndex] =
+            expenseAnalysis.series[categoryIndex] + response.data.amount;
+          setExpenseAnalysis({
+            labels: expenseAnalysis.labels,
+            series: newSeries,
+          });
         } else {
           setExpenseAnalysis({
             labels: [...expenseAnalysis.labels, response.data.category],
@@ -208,13 +259,19 @@ export default function Home() {
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
-                      value={goal}
+                      value={income.goal}
                       label="Meta"
-                      onChange={setGoal}
+                      onChange={(e) =>
+                        setIncome({ ...income, goal: e.target.value })
+                      }
                     >
-                      <MenuItem value={""}>Viagem</MenuItem>
-                      <MenuItem value={""}>Ar condicionado</MenuItem>
-                      <MenuItem value={""}>Carro</MenuItem>
+                      {console.log(user)}
+                      {user.goals &&
+                        user.goals.map((goal) => (
+                          <MenuItem value={goal} key={`goal-${goal.id}`}>
+                            {goal.description}
+                          </MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
                 </Grid2>
@@ -336,6 +393,40 @@ export default function Home() {
                   width="380"
                 />
               </div>
+            </Box>
+            <Box sx={{ boxShadow: 3, padding: 2 }} textAlign="center">
+              <h3>Acompanhamento de Metas</h3>
+              <Grid2 container>
+                <Grid2 md={12}>
+                  <List component="nav" aria-label="main goalList folders">
+                    <ListItem>
+                      <ListItemText primary="Descrição" />
+                      <ListItemText primary="Cumulativo" />
+                      <ListItemText primary="Objetivo" />
+                      <ListItemText primary="Progresso" />
+                    </ListItem>
+                    {user.goals &&
+                      user.goals.map((goal, index) => {
+                        return (
+                          <ListItemButton
+                            key={`goal-list-${index}`}
+                            component="a"
+                          >
+                            <ListItemText primary={goal.description} />
+                            <ListItemText
+                              primary={`R$ ${goal.cumulative || 0}`}
+                            />
+                            <ListItemText primary={`R$ ${goal.northStar}`} />
+                            <GoalProgress
+                              key={`goal-progress-${index}`}
+                              goal={goal}
+                            />
+                          </ListItemButton>
+                        );
+                      })}
+                  </List>
+                </Grid2>
+              </Grid2>
             </Box>
           </Grid2>
         </Grid2>
